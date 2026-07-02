@@ -21,7 +21,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // MongoDB Connection
-mongoose.connect('mongodb+srv://aboosh768_db_user:GDGfRlynPDaNnTbK@cluster0.ulllcji.mongodb.net/moco_academy?retryWrites=true&w=majority&appName=Cluster0', {
+const mongoUri = process.env.MONGO_URI || 'mongodb+srv://aboosh768_db_user:GDGfRlynPDaNnTbK@cluster0.ulllcji.mongodb.net/moco_academy?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
