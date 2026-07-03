@@ -491,7 +491,9 @@ app.get('/api/students/count', handleAsync(async (req, res) => {
 app.get('/api/students/stats', authenticateAdmin, handleAsync(async (req, res) => {
   try {
     const totalStudents = await Student.countDocuments({});
-    return res.status(200).json({ totalStudents });
+    const onlineStudents = onlineUsers.size;
+    const totalCourses = await Course.countDocuments({});
+    return res.status(200).json({ totalStudents, onlineStudents, totalCourses });
   } catch (error) {
     console.error('Error fetching student stats:', error);
     return res.status(500).json({ error: 'Failed to fetch student stats', message: error.message });

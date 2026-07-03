@@ -930,9 +930,19 @@
 
     <!-- Home Tab -->
     <div class="tab-content active" id="home">
-      <div style="background: #FFFFFF; border: 2px solid #111111; padding: 48px; border-radius: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-        <h3 style="font-size: 18px; font-weight: 600; color: #111111; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px;">Total Students Registered</h3>
-        <div id="home-total-students" style="font-size: 3rem; font-weight: bold; color: #111111; line-height: 1;">0</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3><i class="fas fa-users"></i> Total Students Registered</h3>
+          <div class="value" id="home-total-students">0</div>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-wifi"></i> Live Online Students</h3>
+          <div class="value" id="home-online-students">0</div>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-graduation-cap"></i> Total Courses Available</h3>
+          <div class="value" id="home-total-courses">0</div>
+        </div>
       </div>
     </div>
 

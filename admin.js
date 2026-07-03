@@ -102,22 +102,39 @@ async function loadHomeStats() {
     
     if (!response.ok) {
       console.error('Stats API returned error:', response.status);
-      const element = document.getElementById('home-total-students');
-      if (element) element.innerText = 'Error';
+      const totalStudentsEl = document.getElementById('home-total-students');
+      const onlineStudentsEl = document.getElementById('home-online-students');
+      const totalCoursesEl = document.getElementById('home-total-courses');
+      if (totalStudentsEl) totalStudentsEl.innerText = 'Error';
+      if (onlineStudentsEl) onlineStudentsEl.innerText = 'Error';
+      if (totalCoursesEl) totalCoursesEl.innerText = 'Error';
       return;
     }
     
     const data = await response.json();
     console.log('Stats data received:', data);
     
-    const element = document.getElementById('home-total-students');
-    if (element) {
-      element.innerText = data.totalStudents !== undefined && data.totalStudents !== null ? data.totalStudents : '0';
+    const totalStudentsEl = document.getElementById('home-total-students');
+    const onlineStudentsEl = document.getElementById('home-online-students');
+    const totalCoursesEl = document.getElementById('home-total-courses');
+    
+    if (totalStudentsEl) {
+      totalStudentsEl.innerText = data.totalStudents !== undefined && data.totalStudents !== null ? data.totalStudents : '0';
+    }
+    if (onlineStudentsEl) {
+      onlineStudentsEl.innerText = data.onlineStudents !== undefined && data.onlineStudents !== null ? data.onlineStudents : '0';
+    }
+    if (totalCoursesEl) {
+      totalCoursesEl.innerText = data.totalCourses !== undefined && data.totalCourses !== null ? data.totalCourses : '0';
     }
   } catch (error) {
     console.error('Error loading stats:', error);
-    const element = document.getElementById('home-total-students');
-    if (element) element.innerText = 'Error';
+    const totalStudentsEl = document.getElementById('home-total-students');
+    const onlineStudentsEl = document.getElementById('home-online-students');
+    const totalCoursesEl = document.getElementById('home-total-courses');
+    if (totalStudentsEl) totalStudentsEl.innerText = 'Error';
+    if (onlineStudentsEl) onlineStudentsEl.innerText = 'Error';
+    if (totalCoursesEl) totalCoursesEl.innerText = 'Error';
   }
 }
 
