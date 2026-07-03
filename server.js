@@ -542,14 +542,16 @@ app.post('/api/googlemeet', authenticateAdmin, handleAsync(async (req, res) => {
   // Delete any existing meet
   await GoogleMeet.deleteMany({});
 
+  // Parse the date and ensure it's treated as local time (IST)
+  const dateObj = new Date(scheduledTime);
   const meet = new GoogleMeet({
     link,
-    scheduledTime: new Date(scheduledTime)
+    scheduledTime: dateObj
   });
 
   await meet.save();
   
-  // Notify all clients
+  // Notify all clients with the exact time as stored
   io.emit('meet_scheduled', { link, scheduledTime: meet.scheduledTime });
 
   return res.status(201).json({ message: 'Google Meet scheduled successfully', meet });

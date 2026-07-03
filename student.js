@@ -482,6 +482,7 @@ async function loadMeet() {
     
     if (response.ok) {
       const meet = await response.json();
+      // Parse the scheduled time as local time (IST)
       const scheduledTime = new Date(meet.scheduledTime);
       const now = new Date();
       
@@ -528,12 +529,13 @@ function startCountdown(scheduledTime, classEndTime, meetLink) {
   
   function updateCountdown() {
     const now = new Date();
-    const diff = scheduledTime - now;
+    // Calculate difference in milliseconds - both are local times
+    const diff = scheduledTime.getTime() - now.getTime();
     
     if (diff <= 0) {
       clearInterval(countdownInterval);
       // Check if class is currently live
-      if (now < classEndTime) {
+      if (now.getTime() < classEndTime.getTime()) {
         document.getElementById('countdownTimer').style.display = 'none';
         document.getElementById('joinButtonContainer').style.display = 'block';
         

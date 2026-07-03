@@ -1035,6 +1035,27 @@ async function loadMeet() {
   }
 }
 
+// Initialize meet time input with current local time
+function initializeMeetTimeInput() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  
+  const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+  const meetTimeInput = document.getElementById('meetTime');
+  if (meetTimeInput) {
+    meetTimeInput.value = localDateTime;
+  }
+}
+
+// Initialize on page load
+window.addEventListener('load', () => {
+  initializeMeetTimeInput();
+});
+
 document.getElementById('meetForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -1053,6 +1074,7 @@ document.getElementById('meetForm').addEventListener('submit', async (e) => {
     if (response.ok) {
       showNotification('Google Meet scheduled successfully');
       document.getElementById('meetForm').reset();
+      initializeMeetTimeInput(); // Reset to current time
       loadMeet();
     } else {
       showNotification(data.error || 'Error scheduling meet', 'error');
