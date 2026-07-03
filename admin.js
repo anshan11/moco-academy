@@ -13,6 +13,8 @@ window.addEventListener('load', async () => {
       });
       
       if (response.ok) {
+        // Join general chat room
+        socket.emit('join_chat', { chatType: 'general' });
         loadHomeStats();
         loadStudents();
       } else {
@@ -702,7 +704,7 @@ async function sendMessage() {
       body: JSON.stringify({
         sender: null, // Admin (null represents admin in this context)
         content,
-        chatType: 'group',
+        chatType: 'general',
         messageType: 'text'
       })
     });
@@ -837,8 +839,8 @@ async function loadPrivateChat() {
     
     // Filter messages: only show messages between admin and selected student
     const privateMessages = messages.filter(message => {
-      // Message is from selected student to admin (recipient is null for admin)
-      if (message.sender && message.sender._id === studentId && !message.recipient) {
+      // Message is from selected student to admin (recipient is 'admin' string)
+      if (message.sender && message.sender._id === studentId && message.recipient === 'admin') {
         return true;
       }
       // Message is from admin to selected student (recipient is selected student)

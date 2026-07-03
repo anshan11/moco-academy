@@ -133,8 +133,8 @@ const messageSchema = new mongoose.Schema({
   },
   chatType: { 
     type: String, 
-    enum: ['group', 'private'],
-    default: 'group'
+    enum: ['general', 'private'],
+    default: 'general'
   },
   messageType: { 
     type: String, 
@@ -743,12 +743,16 @@ io.on('connection', (socket) => {
       await message.populate('recipient', 'username');
       
       if (messageData.chatType === 'private' && messageData.recipient) {
+        // Private chat: send only to sender and recipient
         const recipientSocketId = onlineUsers.get(messageData.recipient);
         if (recipientSocketId) {
           io.to(recipientSocketId).emit('new_message', message);
         }
+        // Also send to sender so they see their own message
+        socket.emit('new_message', message);
       } else {
-        io.emit('new_message', message);
+        // General chat: send only to users in 'general' room
+        io.to('general').emit('new_message', message);
       }
     } catch (error) {
       console.error('Error sending message via socket:', error);

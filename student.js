@@ -50,7 +50,7 @@ window.addEventListener('load', () => {
       if (currentUser.id) {
         socket.emit('user_online', { userId: currentUser.id, userType: 'student' });
       }
-      socket.emit('join_chat', { chatType: 'group' });
+      socket.emit('join_chat', { chatType: 'general' });
       
       // Load initial data
       loadMessages();
@@ -118,7 +118,7 @@ async function loadMessages() {
   chatContainer.innerHTML = '<div class="skeleton skeleton-card"></div>';
   
   try {
-    const response = await fetch(`${API_BASE}/api/messages?limit=100`);
+    const response = await fetch(`${API_BASE}/api/messages?limit=100&chatType=general`);
     const messages = await response.json();
     
     chatContainer.innerHTML = '';
@@ -181,8 +181,8 @@ async function loadPrivateMessages() {
     
     // Filter messages: only show messages between current student and admin
     const privateMessages = messages.filter(message => {
-      // Message is from current student to admin (recipient is null for admin)
-      if (message.sender && message.sender._id === currentUser.id && !message.recipient) {
+      // Message is from current student to admin (recipient is 'admin' string)
+      if (message.sender && message.sender._id === currentUser.id && message.recipient === 'admin') {
         return true;
       }
       // Message is from admin to current student (recipient is current student)
@@ -254,6 +254,7 @@ async function sendPrivateMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sender: currentUser.id,
+        recipient: 'admin', // Send to admin
         content,
         chatType: 'private',
         messageType: 'text'
@@ -342,7 +343,7 @@ async function sendMessage() {
       body: JSON.stringify({
         sender: currentUser.id,
         content,
-        chatType: 'group',
+        chatType: 'general',
         messageType: 'text'
       })
     });
