@@ -482,7 +482,8 @@ async function loadMeet() {
     
     if (response.ok) {
       const meet = await response.json();
-      // Parse the scheduled time as local time (IST)
+      // Parse the datetime-local string as local time (IST)
+      // Format: "YYYY-MM-DDTHH:mm"
       const scheduledTime = new Date(meet.scheduledTime);
       const now = new Date();
       

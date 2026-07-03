@@ -156,7 +156,7 @@ const googleMeetSchema = new mongoose.Schema({
     required: true 
   },
   scheduledTime: { 
-    type: Date, 
+    type: String, 
     required: true 
   },
   createdAt: { 
@@ -542,11 +542,11 @@ app.post('/api/googlemeet', authenticateAdmin, handleAsync(async (req, res) => {
   // Delete any existing meet
   await GoogleMeet.deleteMany({});
 
-  // Parse the date and ensure it's treated as local time (IST)
-  const dateObj = new Date(scheduledTime);
+  // Store the datetime-local string directly to preserve exact local time (IST)
+  // datetime-local format: "YYYY-MM-DDTHH:mm" (e.g., "2026-07-03T18:24")
   const meet = new GoogleMeet({
     link,
-    scheduledTime: dateObj
+    scheduledTime: scheduledTime
   });
 
   await meet.save();

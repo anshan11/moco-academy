@@ -1013,11 +1013,24 @@ async function loadMeet() {
       const meet = await response.json();
       const container = document.getElementById('currentMeet');
       
+      // Parse the datetime-local string as local time (IST)
+      // Format: "YYYY-MM-DDTHH:mm"
+      const scheduledDate = new Date(meet.scheduledTime);
+      const formattedTime = scheduledDate.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      
       container.innerHTML = `
         <div class="meet-info">
           <div class="details">
             <h4>Class Scheduled</h4>
-            <p><strong>Time:</strong> ${new Date(meet.scheduledTime).toLocaleString()}</p>
+            <p><strong>Time:</strong> ${formattedTime}</p>
             <p><strong>Link:</strong> ${meet.link}</p>
           </div>
           <a href="${meet.link}" target="_blank" class="join-btn">JOIN CLASS</a>
