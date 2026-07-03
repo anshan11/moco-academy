@@ -500,6 +500,37 @@ app.get('/api/students/stats', authenticateAdmin, handleAsync(async (req, res) =
   }
 }));
 
+// Public Stats Endpoints (No authentication required)
+app.get('/api/admin/stats/students', handleAsync(async (req, res) => {
+  try {
+    const count = await Student.countDocuments({});
+    return res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching student count:', error);
+    return res.status(500).json({ error: 'Failed to fetch student count', message: error.message });
+  }
+}));
+
+app.get('/api/admin/stats/online', handleAsync(async (req, res) => {
+  try {
+    const count = onlineUsers.size;
+    return res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching online count:', error);
+    return res.status(500).json({ error: 'Failed to fetch online count', message: error.message });
+  }
+}));
+
+app.get('/api/admin/stats/courses', handleAsync(async (req, res) => {
+  try {
+    const count = await Course.countDocuments({});
+    return res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching course count:', error);
+    return res.status(500).json({ error: 'Failed to fetch course count', message: error.message });
+  }
+}));
+
 // Google Meet Routes (Protected)
 app.post('/api/googlemeet', authenticateAdmin, handleAsync(async (req, res) => {
   const { link, scheduledTime } = req.body;

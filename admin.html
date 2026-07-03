@@ -686,6 +686,20 @@
       height: 120px;
     }
 
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #111111;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .course-stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -933,15 +947,15 @@
       <div class="stats-grid">
         <div class="stat-card">
           <h3><i class="fas fa-users"></i> Total Students Registered</h3>
-          <div class="value" id="home-total-students">0</div>
+          <div class="value" id="home-total-students"><div class="loading-spinner"></div></div>
         </div>
         <div class="stat-card">
           <h3><i class="fas fa-wifi"></i> Live Online Students</h3>
-          <div class="value" id="home-online-students">0</div>
+          <div class="value" id="home-online-students"><div class="loading-spinner"></div></div>
         </div>
         <div class="stat-card">
           <h3><i class="fas fa-graduation-cap"></i> Total Courses Available</h3>
-          <div class="value" id="home-total-courses">0</div>
+          <div class="value" id="home-total-courses"><div class="loading-spinner"></div></div>
         </div>
       </div>
     </div>
