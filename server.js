@@ -10,9 +10,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CORS_ORIGIN || "*",
     methods: ["GET", "POST"]
-  }
+  },
+  transports: ['websocket', 'polling']
 });
 
 // Middleware
@@ -478,9 +479,13 @@ app.get('/api/students/count', handleAsync(async (req, res) => {
 
 // Student Stats (Protected)
 app.get('/api/students/stats', authenticateAdmin, handleAsync(async (req, res) => {
-  const totalStudents = await Student.countDocuments({});
-
-  return res.status(200).json({ totalStudents });
+  try {
+    const totalStudents = await Student.countDocuments({});
+    return res.status(200).json({ totalStudents });
+  } catch (error) {
+    console.error('Error fetching student stats:', error);
+    return res.status(500).json({ error: 'Failed to fetch student stats', message: error.message });
+  }
 }));
 
 // Google Meet Routes (Protected)
@@ -532,7 +537,8 @@ app.get('/api/messages', handleAsync(async (req, res) => {
     .populate('sender', 'username')
     .populate('recipient', 'username')
     .sort({ timestamp: -1 })
-    .limit(parseInt(limit));
+    .limit(parseInt(limit))
+    .lean();
   return res.status(200).json(messages.reverse());
 }));
 
@@ -553,8 +559,8 @@ app.delete('/api/messages/:id', authenticateAdmin, handleAsync(async (req, res) 
 app.post('/api/messages', handleAsync(async (req, res) => {
   const { sender, recipient, content, chatType, messageType } = req.body;
   
-  if (!sender || !content) {
-    return res.status(400).json({ error: 'Sender and content are required' });
+  if (!content) {
+    return res.status(400).json({ error: 'Content is required' });
   }
 
   const message = new Message({
@@ -566,6 +572,10 @@ app.post('/api/messages', handleAsync(async (req, res) => {
   });
 
   await message.save();
+
+  // Populate sender/recipient before emitting
+  await message.populate('sender', 'username');
+  await message.populate('recipient', 'username');
 
   // Emit socket event
   io.emit('new_message', message);
@@ -666,7 +676,11 @@ io.on('connection', (socket) => {
     socket.join(chatType);
   });
 
-  socket.on('send_message', async (messageData) => {
+  so// Populate before emitting
+    await message.populate('sender', 'username');
+    await message.populate('recipient', 'username');
+    
+    cket.on('send_message', async (messageData) => {
     const message = new Message(messageData);
     await message.save();
     

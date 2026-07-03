@@ -185,8 +185,9 @@ The codebase is organized as follows:
 ## Troubleshooting
 
 ### MongoDB Connection Error
-- Ensure MongoDB is running on localhost:27017
-- Check MongoDB service status
+- Ensure MONGO_URI is set in environment variables
+- Verify MongoDB connection string is correct
+- Check MongoDB cluster is accessible
 
 ### Port Already in Use
 - Change PORT in environment variable or modify server.js
