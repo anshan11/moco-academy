@@ -57,13 +57,22 @@ A production-ready, premium minimalist E-Learning and Chat platform built with N
    npm install
    ```
 
-3. **Start MongoDB**
-   - Ensure MongoDB is running locally on `mongodb://localhost:27017`
-   - The application uses the database name `moco_v2`
+3. **Configure Environment Variables**
+   - Create a `.env` file in the project root
+   - Set `MONGO_URI` to your MongoDB connection string (MongoDB Atlas or local)
+   - Set `PORT` (optional, defaults to 3000)
+   - Set `CORS_ORIGIN` (optional, defaults to "*")
+
+   Example `.env` file:
+   ```
+   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+   PORT=3000
+   CORS_ORIGIN=*
+   ```
 
 4. **Start the server**
    ```bash
-   npm start
+   npm startlog
    ```
 
    The server will start on port 3000 (or the PORT specified in environment variables).

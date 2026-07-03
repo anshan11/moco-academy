@@ -119,11 +119,13 @@ const studentSchema = new mongoose.Schema({
 const messageSchema = new mongoose.Schema({
   sender: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Student' 
+    ref: 'Student',
+    required: false
   },
   recipient: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Student' 
+    ref: 'Student',
+    required: false
   },
   content: { 
     type: String, 
@@ -143,6 +145,9 @@ const messageSchema = new mongoose.Schema({
     type: Date, 
     default: Date.now 
   }
+}, {
+  // Optimize for large content (voice messages)
+  minimize: false
 });
 
 const googleMeetSchema = new mongoose.Schema({
@@ -473,8 +478,13 @@ app.delete('/api/students/:id', authenticateAdmin, handleAsync(async (req, res) 
 
 // Student Count
 app.get('/api/students/count', handleAsync(async (req, res) => {
-  const count = await Student.countDocuments();
-  return res.status(200).json({ count });
+  try {
+    const count = await Student.countDocuments({});
+    return res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching student count:', error);
+    return res.status(500).json({ error: 'Failed to fetch student count', message: error.message });
+  }
 }));
 
 // Student Stats (Protected)
@@ -563,24 +573,29 @@ app.post('/api/messages', handleAsync(async (req, res) => {
     return res.status(400).json({ error: 'Content is required' });
   }
 
-  const message = new Message({
-    sender,
-    recipient,
-    content,
-    chatType: chatType || 'group',
-    messageType: messageType || 'text'
-  });
+  try {
+    const message = new Message({
+      sender: sender || null,
+      recipient: recipient || null,
+      content,
+      chatType: chatType || 'group',
+      messageType: messageType || 'text'
+    });
 
-  await message.save();
+    await message.save();
 
-  // Populate sender/recipient before emitting
-  await message.populate('sender', 'username');
-  await message.populate('recipient', 'username');
+    // Populate sender/recipient before emitting
+    await message.populate('sender', 'username');
+    await message.populate('recipient', 'username');
 
-  // Emit socket event
-  io.emit('new_message', message);
+    // Emit socket event
+    io.emit('new_message', message);
 
-  return res.status(201).json({ message: 'Message sent successfully', data: message });
+    return res.status(201).json({ message: 'Message sent successfully', data: message });
+  } catch (error) {
+    console.error('Error saving message:', error);
+    return res.status(500).json({ error: 'Failed to save message', message: error.message });
+  }
 }));
 
 // Resource Routes (Protected)
@@ -676,21 +691,33 @@ io.on('connection', (socket) => {
     socket.join(chatType);
   });
 
-  so// Populate before emitting
-    await message.populate('sender', 'username');
-    await message.populate('recipient', 'username');
-    
-    cket.on('send_message', async (messageData) => {
-    const message = new Message(messageData);
-    await message.save();
-    
-    if (messageData.chatType === 'private' && messageData.recipient) {
-      const recipientSocketId = onlineUsers.get(messageData.recipient);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit('new_message', message);
+  socket.on('send_message', async (messageData) => {
+    try {
+      const message = new Message({
+        sender: messageData.sender || null,
+        recipient: messageData.recipient || null,
+        content: messageData.content,
+        chatType: messageData.chatType || 'group',
+        messageType: messageData.messageType || 'text'
+      });
+      
+      await message.save();
+      
+      // Populate before emitting
+      await message.populate('sender', 'username');
+      await message.populate('recipient', 'username');
+      
+      if (messageData.chatType === 'private' && messageData.recipient) {
+        const recipientSocketId = onlineUsers.get(messageData.recipient);
+        if (recipientSocketId) {
+          io.to(recipientSocketId).emit('new_message', message);
+        }
+      } else {
+        io.emit('new_message', message);
       }
-    } else {
-      io.emit('new_message', message);
+    } catch (error) {
+      console.error('Error sending message via socket:', error);
+      socket.emit('message_error', { error: 'Failed to send message' });
     }
   });
 
