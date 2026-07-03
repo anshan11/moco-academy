@@ -102,15 +102,22 @@ async function loadHomeStats() {
     
     if (!response.ok) {
       console.error('Stats API returned error:', response.status);
+      const element = document.getElementById('home-total-students');
+      if (element) element.innerText = 'Error';
       return;
     }
     
     const data = await response.json();
     console.log('Stats data received:', data);
     
-    document.getElementById('home-total-students').innerText = data.totalStudents;
+    const element = document.getElementById('home-total-students');
+    if (element) {
+      element.innerText = data.totalStudents !== undefined && data.totalStudents !== null ? data.totalStudents : '0';
+    }
   } catch (error) {
     console.error('Error loading stats:', error);
+    const element = document.getElementById('home-total-students');
+    if (element) element.innerText = 'Error';
   }
 }
 
