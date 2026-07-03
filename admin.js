@@ -748,7 +748,7 @@ document.getElementById('recordBtn').addEventListener('click', async () => {
               body: JSON.stringify({
                 sender: null,
                 content: base64Audio,
-                chatType: 'group',
+                chatType: 'general',
                 messageType: 'voice'
               })
             });

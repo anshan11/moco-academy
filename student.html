@@ -409,6 +409,29 @@
       margin-top: 6px;
     }
 
+    .delete-message-btn {
+      background: transparent;
+      border: none;
+      color: #888888;
+      cursor: pointer;
+      padding: 4px 8px;
+      margin-left: 8px;
+      font-size: 12px;
+      transition: color 0.2s ease;
+    }
+
+    .delete-message-btn:hover {
+      color: #EF4444;
+    }
+
+    body.light-mode .delete-message-btn {
+      color: #666666;
+    }
+
+    body.light-mode .delete-message-btn:hover {
+      color: #DC2626;
+    }
+
     .chat-input {
       display: flex;
       gap: 12px;

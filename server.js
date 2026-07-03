@@ -601,6 +601,31 @@ app.delete('/api/messages/:id', authenticateAdmin, handleAsync(async (req, res) 
   return res.status(200).json({ message: 'Message deleted successfully' });
 }));
 
+// Student delete route - only for their own messages
+app.delete('/api/messages/:id/student', handleAsync(async (req, res) => {
+  const studentId = req.headers['x-student-id'];
+  if (!studentId) {
+    return res.status(401).json({ error: 'Student ID required' });
+  }
+
+  const message = await Message.findById(req.params.id);
+  if (!message) {
+    return res.status(404).json({ error: 'Message not found' });
+  }
+
+  // Check if the message belongs to this student
+  if (!message.sender || message.sender.toString() !== studentId) {
+    return res.status(403).json({ error: 'You can only delete your own messages' });
+  }
+
+  await Message.findByIdAndDelete(req.params.id);
+  
+  // Broadcast to all clients to remove the message
+  io.emit('message_deleted', { messageId: req.params.id });
+  
+  return res.status(200).json({ message: 'Message deleted successfully' });
+}));
+
 app.post('/api/messages', handleAsync(async (req, res) => {
   const { sender, recipient, content, chatType, messageType } = req.body;
   

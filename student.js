@@ -157,10 +157,18 @@ function renderMessage(message) {
     contentHtml = `<div class="content">${message.content}</div>`;
   }
   
+  // Add delete button for own messages
+  const deleteButton = isOwnMessage ? `
+    <button class="delete-message-btn" onclick="deleteMessage('${message._id}')">
+      <i class="fas fa-trash"></i>
+    </button>
+  ` : '';
+  
   messageDiv.innerHTML = `
     <div class="sender">${senderName}</div>
     ${contentHtml}
     <div class="timestamp">${new Date(message.timestamp).toLocaleString()}</div>
+    ${deleteButton}
   `;
   
   chatContainer.appendChild(messageDiv);
@@ -225,10 +233,18 @@ function renderPrivateMessage(message) {
     contentHtml = `<div class="content">${message.content}</div>`;
   }
   
+  // Add delete button for own messages
+  const deleteButton = isOwnMessage ? `
+    <button class="delete-message-btn" onclick="deleteMessage('${message._id}')">
+      <i class="fas fa-trash"></i>
+    </button>
+  ` : '';
+  
   messageDiv.innerHTML = `
     <div class="sender">${senderName}</div>
     ${contentHtml}
     <div class="timestamp">${new Date(message.timestamp).toLocaleString()}</div>
+    ${deleteButton}
   `;
   
   chatContainer.appendChild(messageDiv);
@@ -239,6 +255,42 @@ document.getElementById('sendPrivateMessageBtn').addEventListener('click', sendP
 document.getElementById('privateMessageInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     sendPrivateMessage();
+  }
+});
+
+// Delete Message
+async function deleteMessage(messageId) {
+  if (!currentUser) return;
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/messages/${messageId}/student`, {
+      method: 'DELETE',
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-student-id': currentUser.id
+      }
+    });
+    
+    if (response.ok) {
+      // Remove message from DOM
+      const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+      if (messageElement) {
+        messageElement.remove();
+      }
+    } else {
+      const data = await response.json();
+      console.error('Error deleting message:', data.error);
+    }
+  } catch (error) {
+    console.error('Error deleting message:', error);
+  }
+}
+
+// Socket listener for message deletion
+socket.on('message_deleted', (data) => {
+  const messageElement = document.querySelector(`[data-message-id="${data.messageId}"]`);
+  if (messageElement) {
+    messageElement.remove();
   }
 });
 
@@ -389,7 +441,7 @@ document.getElementById('recordBtn').addEventListener('click', async () => {
               body: JSON.stringify({
                 sender: currentUser.id,
                 content: base64Audio,
-                chatType: 'group',
+                chatType: 'general',
                 messageType: 'voice'
               })
             });
