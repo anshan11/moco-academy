@@ -923,15 +923,54 @@
       </header>
 
       <div class="nav-tabs">
-        <button class="nav-tab active" data-tab="course"><i class="fas fa-book"></i> My Course</button>
+        <button class="nav-tab active" data-tab="meet"><i class="fas fa-video"></i> Google Meet</button>
+        <button class="nav-tab" data-tab="course"><i class="fas fa-book"></i> My Course</button>
         <button class="nav-tab" data-tab="chat"><i class="fas fa-comments"></i> General Chat</button>
         <button class="nav-tab" data-tab="private-chat"><i class="fas fa-lock"></i> Private Chat</button>
         <button class="nav-tab" data-tab="resources"><i class="fas fa-folder"></i> Resources</button>
-        <button class="nav-tab" data-tab="meet"><i class="fas fa-video"></i> Google Meet</button>
+      </div>
+
+      <!-- Google Meet Tab -->
+      <div class="tab-content active" id="meet">
+        <div class="card">
+          <h2><i class="fas fa-video"></i> Upcoming Class</h2>
+          <div id="meetContainer">
+            <div class="countdown-container" id="countdownContainer" style="display: none;">
+              <h3 style="color: #FFFFFF; margin-bottom: 16px;">Class Starting In</h3>
+              <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-item">
+                  <span class="number" id="days">00</span>
+                  <span class="label">Days</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="number" id="hours">00</span>
+                  <span class="label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="number" id="minutes">00</span>
+                  <span class="label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                  <span class="number" id="seconds">00</span>
+                  <span class="label">Seconds</span>
+                </div>
+              </div>
+              <div id="joinButtonContainer" style="display: none;">
+                <button class="join-live-btn" id="joinLiveBtn">
+                  <i class="fas fa-video"></i> JOIN LIVE CLASS
+                </button>
+              </div>
+            </div>
+            <div class="no-meet" id="noMeetMessage">
+              <i class="fas fa-calendar-alt" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
+              <p>No class scheduled yet</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Course Tab -->
-      <div class="tab-content active" id="course">
+      <div class="tab-content" id="course">
         <div class="card">
           <h2><i class="fas fa-book"></i> Course Information</h2>
           <div class="course-info">
@@ -997,45 +1036,6 @@
             <div class="no-resources">
               <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
               <p>No resources available yet</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Google Meet Tab -->
-      <div class="tab-content" id="meet">
-        <div class="card">
-          <h2><i class="fas fa-video"></i> Upcoming Class</h2>
-          <div id="meetContainer">
-            <div class="countdown-container" id="countdownContainer" style="display: none;">
-              <h3 style="color: #FFFFFF; margin-bottom: 16px;">Class Starting In</h3>
-              <div class="countdown-timer" id="countdownTimer">
-                <div class="countdown-item">
-                  <span class="number" id="days">00</span>
-                  <span class="label">Days</span>
-                </div>
-                <div class="countdown-item">
-                  <span class="number" id="hours">00</span>
-                  <span class="label">Hours</span>
-                </div>
-                <div class="countdown-item">
-                  <span class="number" id="minutes">00</span>
-                  <span class="label">Minutes</span>
-                </div>
-                <div class="countdown-item">
-                  <span class="number" id="seconds">00</span>
-                  <span class="label">Seconds</span>
-                </div>
-              </div>
-              <div id="joinButtonContainer" style="display: none;">
-                <button class="join-live-btn" id="joinLiveBtn">
-                  <i class="fas fa-video"></i> JOIN LIVE CLASS
-                </button>
-              </div>
-            </div>
-            <div class="no-meet" id="noMeetMessage">
-              <i class="fas fa-calendar-alt" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
-              <p>No class scheduled yet</p>
             </div>
           </div>
         </div>

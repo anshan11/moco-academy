@@ -485,12 +485,10 @@ async function loadMeet() {
       const scheduledTime = new Date(meet.scheduledTime);
       const now = new Date();
       
-      if (scheduledTime > now) {
-        // Show countdown
-        document.getElementById('countdownContainer').style.display = 'block';
-        document.getElementById('noMeetMessage').style.display = 'none';
-        startCountdown(scheduledTime, meet.link);
-      } else {
+      // Calculate class end time (2 hours after start)
+      const classEndTime = new Date(scheduledTime.getTime() + 2 * 60 * 60 * 1000);
+      
+      if (now >= scheduledTime && now < classEndTime) {
         // Class is live - show join button
         document.getElementById('countdownContainer').style.display = 'block';
         document.getElementById('noMeetMessage').style.display = 'none';
@@ -499,6 +497,20 @@ async function loadMeet() {
         
         const joinBtn = document.getElementById('joinLiveBtn');
         joinBtn.onclick = () => window.open(meet.link, '_blank');
+      } else if (now < scheduledTime) {
+        // Show countdown
+        document.getElementById('countdownContainer').style.display = 'block';
+        document.getElementById('noMeetMessage').style.display = 'none';
+        document.getElementById('countdownTimer').style.display = 'flex';
+        document.getElementById('joinButtonContainer').style.display = 'none';
+        startCountdown(scheduledTime, classEndTime, meet.link);
+      } else {
+        // Class has ended
+        document.getElementById('countdownContainer').style.display = 'block';
+        document.getElementById('noMeetMessage').style.display = 'none';
+        document.getElementById('countdownTimer').style.display = 'none';
+        document.getElementById('joinButtonContainer').style.display = 'none';
+        document.getElementById('countdownContainer').innerHTML = '<p style="color: #888888; text-align: center;">Class has ended</p>';
       }
     } else {
       document.getElementById('countdownContainer').style.display = 'none';
@@ -511,7 +523,7 @@ async function loadMeet() {
 
 let countdownInterval;
 
-function startCountdown(scheduledTime, meetLink) {
+function startCountdown(scheduledTime, classEndTime, meetLink) {
   if (countdownInterval) clearInterval(countdownInterval);
   
   function updateCountdown() {
@@ -520,11 +532,18 @@ function startCountdown(scheduledTime, meetLink) {
     
     if (diff <= 0) {
       clearInterval(countdownInterval);
-      document.getElementById('countdownTimer').style.display = 'none';
-      document.getElementById('joinButtonContainer').style.display = 'block';
-      
-      const joinBtn = document.getElementById('joinLiveBtn');
-      joinBtn.onclick = () => window.open(meetLink, '_blank');
+      // Check if class is currently live
+      if (now < classEndTime) {
+        document.getElementById('countdownTimer').style.display = 'none';
+        document.getElementById('joinButtonContainer').style.display = 'block';
+        
+        const joinBtn = document.getElementById('joinLiveBtn');
+        joinBtn.onclick = () => window.open(meetLink, '_blank');
+      } else {
+        document.getElementById('countdownTimer').style.display = 'none';
+        document.getElementById('joinButtonContainer').style.display = 'none';
+        document.getElementById('countdownContainer').innerHTML = '<p style="color: #888888; text-align: center;">Class has ended</p>';
+      }
       return;
     }
     
